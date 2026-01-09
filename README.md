@@ -1,6 +1,6 @@
-# Achievements Enabler AE
+# Crash Logger AE
 
-Buffout 4 NG's Achievements Patch ported to FO4 1.11.137.0+.<br>
+Buffout 4 NG's Crash Logger ported to FO4 1.11.137.0+.<br>
 Supports only the Anniversary Editions of the Game.
 
 ### Requirements
@@ -9,8 +9,8 @@ Supports only the Anniversary Editions of the Game.
 
 ## Getting Started
 ```bat
-git clone --recurse-submodules https://github.com/TheGamerX20/AchievementsEnablerAE
-cd AchievementsEnablerAE
+git clone --recurse-submodules https://github.com/TheGamerX20/CrashLoggerAE
+cd CrashLoggerAE
 ```
 
 ### Build
