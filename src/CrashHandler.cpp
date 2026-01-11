@@ -134,17 +134,13 @@ namespace Crash
 		for (std::size_t i = 0; i < _frames.size(); ++i) {
 			const auto mod = moduleStack[i];
 			const auto& frame = _frames[i];
-			/*a_log.critical(fmt::runtime(format), i, reinterpret_cast<std::uintptr_t>(frame.address()), (mod ? mod->name() : ""sv),
-				(mod ? mod->frame_info(frame) : ""s));*/
-			auto message = fmt::format(
+			a_log.critical(fmt::format(
 				fmt::runtime(format),
 				i,
 				reinterpret_cast<std::uintptr_t>(frame.address()),
 				mod ? mod->name() : "",
 				mod ? mod->frame_info(frame) : ""
-			);
-
-			a_log.critical(message);
+			));
 		}
 	}
 
@@ -155,14 +151,11 @@ namespace Crash
 		const auto format = "\t[{:>"s + get_size_string(_stacktrace.size()) + "}] 0x{:X}"s;
 
 		for (std::size_t i = 0; i < _stacktrace.size(); ++i) {
-			//a_log.critical(fmt::runtime(format), i, reinterpret_cast<std::uintptr_t>(_stacktrace[i].address()));
-			auto message = fmt::format(
+			a_log.critical(fmt::format(
 				fmt::runtime(format),
 				i,
 				reinterpret_cast<std::uintptr_t>(_stacktrace[i].address())
-			);
-			a_log.critical(message);
-
+			));
 		}
 	}
 
@@ -381,13 +374,11 @@ namespace Crash
 				}();
 
 			for (const auto& mod : a_modules) {
-				//a_log.critical(fmt::runtime(format), mod->name(), mod->address());
-				auto message = fmt::format(
+				a_log.critical(fmt::format(
 					fmt::runtime(format),
 					mod->name(),
 					mod->address()
-				);
-				a_log.critical(message);
+				));
 			}
 		}
 
@@ -410,26 +401,21 @@ namespace Crash
 						lightCount = smallfiles.size();
 						a_log.critical("\tLight: {}\tRegular: {}\tTotal: {}"sv, lightCount, modCount, lightCount + modCount);
 						for (const auto& file : files) {
-							//a_log.critical(fmt::runtime(fileFormat), file->GetCompileIndex(), "", file->GetFilename());
-							auto message = fmt::format(
+							a_log.critical(fmt::format(
 								fmt::runtime(fileFormat),
 								file->GetCompileIndex(),
 								"",
 								file->GetFilename()
-							);
-							a_log.critical(message);
+							));
 
 						}
 
 						for (const auto& file : smallfiles) {
-							//a_log.critical("\t[FE:{:>03X}] {}"sv, file->GetSmallFileCompileIndex(), file->GetFilename());
-							auto message = fmt::format(
+							a_log.critical(fmt::format(
 								"\t[FE:{:>03X}] {}",
 								file->GetSmallFileCompileIndex(),
 								file->GetFilename()
-							);
-							a_log.critical(message);
-
+							));
 						}
 					}
 			}
@@ -470,31 +456,6 @@ namespace Crash
 			}
 		}
 
-		void print_settings(
-			spdlog::logger& a_log)
-		{
-#define SETTING_CASE(a_type)                                                           \
-	if (std::holds_alternative<std::reference_wrapper<a_type>>(unknown)) {             \
-		const auto& setting = std::get<std::reference_wrapper<a_type>>(unknown).get(); \
-		if (group != setting.group()) {                                                \
-			group = setting.group();                                                   \
-			a_log.critical("\t[{}]"sv, group);                                         \
-		}                                                                              \
-		a_log.critical(                                                                \
-			"\t\t{}: {}"sv,                                                            \
-			setting.key(),                                                             \
-			setting.get());                                                            \
-	}
-
-			std::string_view group = ""sv;
-			/*for (const auto& unknown : Settings::settings) {
-				SETTING_CASE(Settings::bSetting);
-				SETTING_CASE(Settings::iSetting);
-				SETTING_CASE(Settings::sSetting);
-			}*/
-
-#undef SETTING_CASE
-		}
 		void print_stack(spdlog::logger& a_log, const ::CONTEXT& a_context, std::span<const module_pointer> a_modules)
 		{
 			a_log.critical("STACK:"sv);
@@ -519,14 +480,12 @@ namespace Crash
 				for (std::size_t off = 0; off < stack.size(); off += blockSize) {
 					const auto analysis = stack.subspan(off, std::min<std::size_t>(stack.size() - off, blockSize)); //Introspection::analyze_data(stack.subspan(off, std::min<std::size_t>(stack.size() - off, blockSize)), a_modules);
 					for (const auto& data : analysis) {
-						//a_log.critical(fmt::runtime(format), idx * sizeof(std::size_t), stack[idx], data);
-						auto message = fmt::format(
+						a_log.critical(fmt::format(
 							fmt::runtime(format),
 							idx * sizeof(std::size_t),
 							stack[idx],
 							data
-						);
-						a_log.critical(message);
+						));
 						++idx;
 					}
 				}
@@ -577,61 +536,6 @@ namespace Crash
 				gibibyte(mem.physical_total - mem.physical_available), gibibyte(mem.physical_total));
 		}
 
-		//void print_vrinfo(spdlog::logger& a_log)
-		//{
-		//	static auto openvr = GetModuleHandle("openvr_api");  // dynamically attach to open_vr
-		//	if (openvr) {
-		//		static auto _VR_GetGenericInterface = reinterpret_cast<decltype(&VR_GetGenericInterface)>(GetProcAddress(openvr, "VR_GetGenericInterface"));
-		//		static auto _VR_IsHmdPresent = reinterpret_cast<decltype(&VR_IsHmdPresent)>(GetProcAddress(openvr, "VR_IsHmdPresent"));
-		//		static auto _VR_IsRuntimeInstalled = reinterpret_cast<decltype(&VR_IsRuntimeInstalled)>(GetProcAddress(openvr, "VR_IsRuntimeInstalled"));
-		//		if (_VR_GetGenericInterface && _VR_IsHmdPresent && _VR_IsRuntimeInstalled && _VR_IsHmdPresent() && _VR_IsRuntimeInstalled()) {
-		//			a_log.critical("VR SPECS:"sv);
-		//			// Loading the SteamVR Runtime
-		//			EVRInitError eError = VRInitError_None;
-		//			auto HMD = (IVRSystem*)_VR_GetGenericInterface(IVRSystem_Version, &eError);
-
-		//			if (eError != VRInitError_None) {
-		//				a_log.critical("\tUnable to initialize VR"sv);
-		//				return;
-		//			}
-		//			const std::vector<std::pair<std::string, ETrackedDeviceProperty>> propListString{
-		//				{ "Model", Prop_ModelNumber_String },
-		//				{ "Manufacturer", Prop_ManufacturerName_String },
-		//				{ "Tracking System", Prop_TrackingSystemName_String },
-		//				{ "Hardware Revision", Prop_HardwareRevision_String },
-		//				{ "Driver Version", Prop_DriverVersion_String },
-		//				{ "Render Model", Prop_RenderModelName_String },
-		//				{ "Additional Data", Prop_AdditionalSystemReportData_String },
-		//				{ "Expected Controller Type", Prop_ExpectedControllerType_String },
-		//				{ "Controller Type", Prop_ControllerType_String }
-		//			};
-		//			const std::vector<std::pair<std::string, ETrackedDeviceProperty>> propListFloat{
-		//				//{ "Battery %", Prop_DeviceBatteryPercentage_Float },
-		//				//{ "Power Usage", Prop_DevicePowerUsage_Float }, // maybe be future value
-		//				{ "Display Frequency", Prop_DisplayFrequency_Float }
-		//			};
-		//			const std::vector<std::pair<std::string, ETrackedDeviceProperty>> propListBool{
-		//				{ "Wireless", Prop_DeviceIsWireless_Bool },
-		//				{ "Charging", Prop_DeviceIsCharging_Bool },
-		//				{ "Update Available", Prop_Firmware_UpdateAvailable_Bool },
-		//			};
-		//			char propValue[k_unMaxPropertyStringSize];
-		//			for (const auto& entry : propListString) {
-		//				HMD->GetStringTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd, entry.second, propValue, (std::uint32_t)std::size(propValue));
-		//				a_log.critical("\t{}: {}"sv, entry.first, propValue);
-		//			}
-		//			for (const auto& entry : propListFloat) {
-		//				const auto fpropValue = HMD->GetFloatTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd, entry.second);
-		//				a_log.critical("\t{}: {}"sv, entry.first, fpropValue);
-		//			}
-		//			for (const auto& entry : propListBool) {
-		//				const auto bpropValue = HMD->GetBoolTrackedDeviceProperty(k_unTrackedDeviceIndex_Hmd, entry.second);
-		//				a_log.critical("\t{}: {}"sv, entry.first, bpropValue);
-		//			}
-		//		}
-		//	}
-		//}
-
 		std::int32_t __stdcall UnhandledExceptions(::EXCEPTION_POINTERS* a_exception) noexcept
 		{
 #ifndef NDEBUG
@@ -676,9 +580,7 @@ namespace Crash
 				log->flush();
 
 				print([&]() { print_exception(*log, *a_exception->ExceptionRecord, cmodules); }, "print_exception");
-				//print([&]() { print_settings(*log); }, "print_settings");
 				print([&]() { print_sysinfo(*log); }, "print_sysinfo");
-				//print([&]() { print_vrinfo(*log); }, "print_vrinfo");
 
 				print(
 					[&]() {
