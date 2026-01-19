@@ -9,7 +9,7 @@ set_project("CrashLoggerAE")
 set_license("GPL-3.0")
 
 -- project version
-local version = "1.3.0"
+local version = "1.4.0"
 local major, minor, patch = version:match("^(%d+)%.(%d+)%.(%d+)$")
 set_version(version)
 
@@ -32,10 +32,14 @@ set_config("commonlib_xbyak", true)
 -- add requires
 add_requires("fmt")
 add_requires("frozen")
-add_requires("infoware")
-add_requires("magic_enum")
-add_requires("zydis v3.2.1", {alias = "zydis3"})
-add_requires("boost", {
+add_requires("infoware", {
+    configs = {
+        d3d = true
+    }
+})
+add_requires("magic_enum 0.8.2")
+add_requires("zydis 3.2.1")
+add_requires("boost 1.86.0", {
     configs = {
         container  = true,
         nowide     = true,
@@ -46,12 +50,14 @@ add_requires("boost", {
 
 -- targets
 target("CrashLoggerAE")
+    add_cxxflags("/EHa", "/permissive-", { public = true })
+
     -- add packages
     add_packages("fmt")
     add_packages("frozen")
     add_packages("infoware")
     add_packages("magic_enum")
-    add_packages("zydis3")
+    add_packages("zydis")
     add_packages("boost")
 
     -- add DIA SDK Includes

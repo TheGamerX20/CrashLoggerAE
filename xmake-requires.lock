@@ -3,8 +3,8 @@
         version = "1.0"
     },
     ["windows|x64"] = {
-        ["boost#07bc8cd6"] = {
-            version = "1.88.0"
+        ["boost 1.86.0#07bc8cd6"] = {
+            version = "1.86.0"
         },
         ["cmake#f56260b5"] = {
             version = "4.2.0"
@@ -15,11 +15,11 @@
         ["frozen#f56260b5"] = {
             version = "1.2.0"
         },
-        ["infoware#f56260b5"] = {
+        ["infoware#af2e788d"] = {
             version = "2023.04.12"
         },
-        ["magic_enum#f56260b5"] = {
-            version = "v0.9.7"
+        ["magic_enum 0.8.2#f56260b5"] = {
+            version = "v0.8.2"
         },
         ["ninja#f56260b5"] = {
             version = "1.12.1"
@@ -36,7 +36,7 @@
         ["zycore-c v1.1.0#f56260b5"] = {
             version = "v1.1.0"
         },
-        ["zydis v3.2.1#f56260b5"] = {
+        ["zydis 3.2.1#f56260b5"] = {
             version = "v3.2.1"
         }
     }

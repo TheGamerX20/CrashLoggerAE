@@ -111,7 +111,7 @@ namespace Crash
 	void Callstack::print_probable_callstack(spdlog::logger& a_log, std::span<const module_pointer> a_modules) const
 	{
 		a_log.critical("PROBABLE CALL STACK:"sv);
-		
+
 		std::vector<const Modules::Module*> moduleStack;
 		moduleStack.reserve(_frames.size());
 		for (const auto& frame : _frames) {
@@ -449,7 +449,7 @@ namespace Crash
 			for (std::size_t i = 0; i < regs.size(); ++i) {
 				todo[i] = regs[i].second;
 			}
-			const auto analysis = todo; //Introspection::analyze_data(todo, a_modules);
+			const auto analysis = Introspection::analyze_data(todo, a_modules);
 			for (std::size_t i = 0; i < regs.size(); ++i) {
 				const auto& [name, reg] = regs[i];
 				a_log.critical("\t{:<3} 0x{:<16X} {}"sv, name, reg, analysis[i]);
@@ -478,7 +478,7 @@ namespace Crash
 				constexpr std::size_t blockSize = 1000;
 				std::size_t idx = 0;
 				for (std::size_t off = 0; off < stack.size(); off += blockSize) {
-					const auto analysis = stack.subspan(off, std::min<std::size_t>(stack.size() - off, blockSize)); //Introspection::analyze_data(stack.subspan(off, std::min<std::size_t>(stack.size() - off, blockSize)), a_modules);
+					const auto analysis = Introspection::analyze_data(stack.subspan(off, std::min<std::size_t>(stack.size() - off, blockSize)), a_modules);
 					for (const auto& data : analysis) {
 						a_log.critical(fmt::format(
 							fmt::runtime(format),
