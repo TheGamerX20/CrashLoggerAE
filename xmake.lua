@@ -9,7 +9,7 @@ set_project("CrashLoggerAE")
 set_license("GPL-3.0")
 
 -- project version
-local version = "1.4.0"
+local version = "1.5.0"
 local major, minor, patch = version:match("^(%d+)%.(%d+)%.(%d+)$")
 set_version(version)
 
@@ -72,7 +72,7 @@ target("CrashLoggerAE")
     add_rules("commonlibf4.plugin", {
         name = "CrashLoggerAE",
         author = "TheGamerX20",
-        description = "Crash Logging on AE!"
+        description = "Buffout 4 NG's Crash Logger ported to AE"
     })
 
     -- add src files

@@ -7,17 +7,13 @@
 namespace Main
 {
     // Config Options
-    static REX::INI::Bool iCrashLoggerPatch{ "Patches"sv, "EnableCrashLoggerPatch"sv, true };
+    static REX::INI::Bool iCrashLoggerPatch{ "CrashLogger"sv, "EnableCrashLogger"sv, true };
 
     F4SE_PLUGIN_PRELOAD(const F4SE::LoadInterface* a_f4se)
     {
         // Init
         F4SE::Init(a_f4se);
         REX::INFO("Crash Logger AE Initializing...");
-
-        // Get the Trampoline and Allocate
-		auto& trampoline = REL::GetTrampoline();
-		trampoline.create(128);
 
         // Load the Config
         const auto config = REX::INI::SettingStore::GetSingleton();
