@@ -104,10 +104,9 @@ inline std::string utf16_to_utf8(std::wstring_view wstr) {
 
 namespace util
 {
-	[[nodiscard]] inline auto module_name()
-		-> std::string
+	[[nodiscard]] inline auto module_name() -> std::string
 	{
-		const auto filename = REL::Module::GetSingleton()->filename();
-		return utf16_to_utf8(filename);
+		const auto FileName = std::filesystem::path(REL::Module::GetSingleton()->filename()).filename().wstring();
+		return utf16_to_utf8(FileName);
 	}
 }

@@ -915,13 +915,13 @@ namespace Crash::Introspection
 					hierarchy->numBaseClasses);
 				for (const auto rva : bases) {
 					const auto base = reinterpret_cast<RE::RTTI::BaseClassDescriptor*>(rva + moduleBase);
-					const auto it = FILTERS.find(base->typeDescriptor->name());
+					const auto it = FILTERS.find(base->typeDescriptor->raw_name());
 					if (it != FILTERS.end()) {
 						const auto root = REX::ADJUST_POINTER<void>(_ptr, -static_cast<std::ptrdiff_t>(_col->offset));
 						const auto target = REX::ADJUST_POINTER<void>(root, static_cast<std::ptrdiff_t>(base->pmd.mDisp));
 						it->second(xInfo, target, 0);
 					}
-					REX::INFO("Found unhandled type:\t{}\t{}"sv, result, base->typeDescriptor->name());
+					REX::INFO("Found unhandled type:\t{}\t{}"sv, result, base->typeDescriptor->raw_name());
 				}
 
 				if (!xInfo.empty()) {
@@ -1026,10 +1026,10 @@ namespace Crash::Introspection
 				}
 
 				if (_stricmp(mod->name().data(), util::module_name().c_str()) == 0) {
-					return make_result<F4Polymorphic>(typeDesc->name(), col, a_ptr);
+					return make_result<F4Polymorphic>(typeDesc->raw_name(), col, a_ptr);
 				}
 				else {
-					return make_result<Polymorphic>(typeDesc->name());
+					return make_result<Polymorphic>(typeDesc->raw_name());
 				}
 			}
 			catch (...) {
