@@ -51,6 +51,9 @@
 
 namespace Crash
 {
+	// Config Options
+	static REX::INI::Bool iWaitForDebugger{ "Debug"sv, "WaitForDebugger"sv, false };
+
 	class SEHException : public std::exception
 	{
 	public:
@@ -456,6 +459,63 @@ namespace Crash
 			}
 		}
 
+		void print_settings(spdlog::logger& a_log)
+		{
+			std::filesystem::path BuffoutINIFile = "Data/F4SE/Plugins/Buffout4AE.ini";
+
+			if (!std::filesystem::exists(BuffoutINIFile))
+			{
+				REX::WARN("Buffout4AE's INI File was not found at: {}", BuffoutINIFile.string());
+				return;
+			}
+
+			std::ifstream file(BuffoutINIFile);
+			if (!file.is_open())
+			{
+				REX::WARN("Failed to open Buffout4AE's INI File at: {}", BuffoutINIFile.string());
+				return;
+			}
+
+			std::string line;
+			std::string current_group;
+
+			while (std::getline(file, line))
+			{
+				while (!line.empty() && (line.back() == '\r' || line.back() == '\n'))
+				{
+					line.pop_back();
+				}
+
+				// Ignore Empty Lines and Comments
+				if (line.empty()) continue;
+				if (line[0] == ';' || line[0] == '#') continue;
+
+				// [GroupName]
+				if (line.front() == '[' && line.back() == ']')
+				{
+					current_group = line.substr(1, line.size() - 2);
+					a_log.critical("\t[{}]", current_group);
+
+					if (current_group == "Debug")
+					{
+						// Log our Debug Settings
+						a_log.critical("\t\t{}: {}", "WaitForDebugger", iWaitForDebugger.GetValue());
+					}
+
+					continue;
+				}
+
+				// Key/Value
+				auto eq_pos = line.find('=');
+				if (eq_pos == std::string::npos) continue;
+
+				std::string key = line.substr(0, eq_pos);
+				std::string value = line.substr(eq_pos + 1);
+
+				a_log.critical("\t\t{}: {}", key, value);
+			}
+		}
+
 		void print_stack(spdlog::logger& a_log, const ::CONTEXT& a_context, std::span<const module_pointer> a_modules)
 		{
 			a_log.critical("STACK:"sv);
@@ -541,14 +601,19 @@ namespace Crash
 #ifndef NDEBUG
 			while (!WinAPI::IsDebuggerPresent()) {}
 #else
-			/*if (*Settings::WaitForDebugger) {
+			if (iWaitForDebugger.GetValue())
+			{
 				REX::INFO("Waiting for Debugger to attach");
-				while (!::WinAPI::IsDebuggerPresent()) {
+				
+				while (!::WinAPI::IsDebuggerPresent())
+				{
 					Sleep(10);
 				}
 				if (::WinAPI::IsDebuggerPresent())
+				{
 					DebugBreak();
-			}*/
+				}
+			}
 #endif
 			// Install the SEH-to-C++ exception translator
 			_set_se_translator(seh_translator);
@@ -576,10 +641,11 @@ namespace Crash
 
 				const auto runtimeVer = REL::Module::GetSingleton()->version();
 				log->critical("Fallout 4 v{}.{}.{}"sv, runtimeVer[0], runtimeVer[1], runtimeVer[2]);
-				log->critical("MiniBuff AE Crash Logger v{}.{}.{} {} {}"sv, PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, __DATE__, __TIME__);
+				log->critical("Buffout 4 v{}.{}.{} {} {}"sv, PLUGIN_VERSION_MAJOR, PLUGIN_VERSION_MINOR, PLUGIN_VERSION_PATCH, __DATE__, __TIME__);
 				log->flush();
 
 				print([&]() { print_exception(*log, *a_exception->ExceptionRecord, cmodules); }, "print_exception");
+				print([&]() { print_settings(*log); }, "print_settings");
 				print([&]() { print_sysinfo(*log); }, "print_sysinfo");
 
 				print(

@@ -7,7 +7,7 @@
 namespace Main
 {
     // Config Options
-    static REX::INI::Bool iCrashLoggerPatch{ "CrashLogger"sv, "EnableCrashLogger"sv, true };
+    static REX::INI::Bool iCrashLoggerPatch{ "Patches"sv, "EnableCrashLogger"sv, true };
 
     F4SE_PLUGIN_PRELOAD(const F4SE::LoadInterface* a_f4se)
     {
