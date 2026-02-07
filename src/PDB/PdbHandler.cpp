@@ -14,6 +14,9 @@ namespace Crash
 {
 	namespace PDB
 	{
+		// Config Options
+		static REX::INI::Str iSymcache{ "Debug"sv, "Symcache"sv, std::string{"C:\symcache"} };
+
 		std::atomic<bool> symcacheChecked = false;
 		std::atomic<bool> symcacheValid = false;
 		//https://stackoverflow.com/questions/6284524/bstr-to-stdstring-stdwstring-and-vice-versa
@@ -338,7 +341,7 @@ namespace Crash
 			std::wstring dll_path_w = utf8_to_utf16(dll_path);
 			wcsncpy(wszFilename, dll_path_w.c_str(), sizeof(wszFilename) / sizeof(wchar_t));
 
-			std::string symcache = "C:\symcache";
+			std::string symcache = iSymcache.GetValue();
 
 			if (!symcacheChecked) {
 				if (!symcache.empty() && std::filesystem::exists(symcache) && std::filesystem::is_directory(symcache)) {

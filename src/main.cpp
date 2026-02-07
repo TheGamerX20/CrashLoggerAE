@@ -17,7 +17,7 @@ namespace Main
 
         // Load the Config
         const auto config = REX::INI::SettingStore::GetSingleton();
-        config->Init("Data/F4SE/Plugins/CrashLoggerAE.ini", "Data/F4SE/Plugins/CrashLoggerAECustom.ini");
+        config->Init("Data/F4SE/Plugins/Buffout4AE.ini", "Data/F4SE/Plugins/Buffout4AECustom.ini");
         config->Load();
 
         // Install Crash Logger AE

@@ -496,12 +496,6 @@ namespace Crash
 					current_group = line.substr(1, line.size() - 2);
 					a_log.critical("\t[{}]", current_group);
 
-					if (current_group == "Debug")
-					{
-						// Log our Debug Settings
-						a_log.critical("\t\t{}: {}", "WaitForDebugger", iWaitForDebugger.GetValue());
-					}
-
 					continue;
 				}
 
@@ -511,6 +505,22 @@ namespace Crash
 
 				std::string key = line.substr(0, eq_pos);
 				std::string value = line.substr(eq_pos + 1);
+
+				// Strip Inline Comments
+				auto comment_pos = value.find_first_of("#;");
+				if (comment_pos != std::string::npos)
+				{
+					value = value.substr(0, comment_pos);
+				}
+
+				// Trim Whitespace
+				auto trim = [](std::string& s)
+					{
+						s.erase(0, s.find_first_not_of(" \t"));
+						s.erase(s.find_last_not_of(" \t") + 1);
+					};
+
+				trim(value);
 
 				a_log.critical("\t\t{}: {}", key, value);
 			}
